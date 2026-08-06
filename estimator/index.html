@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rovo Credit Estimator</title>
+<script src="https://artifactcdn.diabrowser.engineering/ajax/libs/Chart.js/chart.umd.js"></script>
+<script src="../shared/rovo-data.js"></script>
+<script src="../data/rovo-rates.embedded.js"></script>
+<style>
+  :root {
+    --ink: #1a1f24;
+    --muted: #5d6b7a;
+    --line: #dfe4ea;
+    --panel: #ffffff;
+    --bg: #f4f6f8;
+    --track: #eaeef2;
+    --ok: #1f845a; --ok-soft: #dcfff1;
+    --warn: #c9372c; --warn-soft: #ffecea;
+    --amber: #a54800; --amber-soft: #fff3e6;
+    --std: #626f86; --std-soft: #eef1f5;
+    --prem: #0c66e4; --prem-soft: #e9f2ff;
+    --ent: #6e5dc6; --ent-soft: #efeafc;
+    --font: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+  }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--bg); color:var(--ink); font-family:var(--font);
+    line-height:1.45; -webkit-font-smoothing:antialiased; }
+  .topbar { background:var(--panel); border-bottom:1px solid var(--line); padding:14px 24px;
+    display:flex; align-items:center; gap:12px; position:sticky; top:0; z-index:10; }
+  .logo-dot { width:22px; height:22px; border-radius:50%;
+    background:radial-gradient(circle at 35% 35%, #4794ff, #0c66e4); flex:none; }
+  .topbar h1 { font-size:16px; margin:0; font-weight:600; letter-spacing:-0.01em; }
+  .topbar .sub { color:var(--muted); font-size:13px; margin-left:2px; }
+  .topbar .verified { margin-left:auto; background:var(--std-soft); color:var(--muted);
+    font-size:11px; font-weight:600; padding:2px 8px; border-radius:4px; }
+  .topbar .ver { background:var(--prem-soft); color:var(--prem); font-size:11px; font-weight:600;
+    padding:2px 8px; border-radius:4px; margin-left:8px; }
+
+  .wrap { max-width:1180px; margin:0 auto; padding:24px 24px 80px;
+    display:grid; grid-template-columns:minmax(0,400px) minmax(0,1fr); gap:24px; }
+  @media (max-width:880px){ .wrap{ grid-template-columns:minmax(0,1fr); } }
+
+  .card { background:var(--panel); border:1px solid var(--line); border-radius:10px; }
+  .card-h { padding:16px 18px 10px; font-size:13px; font-weight:600; text-transform:uppercase;
+    letter-spacing:0.05em; color:var(--muted); }
+  .card-b { padding:4px 18px 20px; }
+
+  .intro { grid-column:1/-1; background:var(--panel); border:1px solid var(--line);
+    border-radius:10px; padding:18px 20px; }
+  .intro h2 { margin:0 0 8px; font-size:15px; }
+  .intro ol { margin:0; padding-left:20px; color:var(--muted); font-size:13.5px; }
+  .intro ol li { margin:4px 0; }
+  .intro strong { color:var(--ink); }
+  .intro .foot { margin:10px 0 0; font-size:12px; color:var(--muted); }
+
+  label.fld { display:block; margin:16px 0 6px; font-size:13px; font-weight:600; }
+  .hint { color:var(--muted); font-weight:400; font-size:12px; }
+
+  .approw { border:1px solid var(--line); border-radius:9px; padding:10px 12px; margin-bottom:10px;
+    transition:border-color .2s, background .2s; }
+  .approw.on[data-plan="Standard"]   { border-color:var(--std);  background:var(--std-soft); }
+  .approw.on[data-plan="Premium"]    { border-color:var(--prem); background:var(--prem-soft); }
+  .approw.on[data-plan="Enterprise"] { border-color:var(--ent);  background:var(--ent-soft); }
+  .approw-top { display:flex; align-items:center; gap:9px; }
+  .approw-top input[type=checkbox]{ width:16px; height:16px; accent-color:var(--prem); }
+  .approw-name { font-size:14px; font-weight:600; }
+  .approw-alw { margin-left:auto; font-size:12px; color:var(--muted); font-variant-numeric:tabular-nums; }
+  .approw-ctl { display:flex; align-items:center; gap:8px; margin-top:9px; padding-left:25px; flex-wrap:wrap; }
+  .approw-ctl.off { opacity:.4; pointer-events:none; }
+  .plan-seg { display:flex; gap:4px; flex-wrap:wrap; }
+  .plan-seg button { padding:5px 9px; border:1px solid var(--line); background:#fff; border-radius:6px;
+    font:inherit; font-size:12px; cursor:pointer; color:var(--muted); }
+  .plan-seg button.on[data-plan="Standard"]   { background:var(--std);  border-color:var(--std);  color:#fff; }
+  .plan-seg button.on[data-plan="Premium"]    { background:var(--prem); border-color:var(--prem); color:#fff; }
+  .plan-seg button.on[data-plan="Enterprise"] { background:var(--ent);  border-color:var(--ent);  color:#fff; }
+  .approw-ctl .seats { margin-left:auto; display:flex; align-items:center; gap:6px; font-size:12px; color:var(--muted); flex:none; }
+  .approw-ctl .seats input { width:64px; max-width:64px; padding:5px 7px; border:1px solid var(--line); border-radius:6px; font:inherit; }
+
+  .slider-row { margin:14px 0 4px; }
+  .slider-top { display:flex; justify-content:space-between; align-items:baseline; }
+  .slider-top .name { font-size:13px; font-weight:600; }
+  .slider-top .val { font-size:13px; color:var(--prem); font-weight:600; }
+  .slider-top .cost { font-size:11px; color:var(--muted); font-weight:400; margin-left:6px; }
+  input[type=range]{ width:100%; accent-color:var(--prem); margin:6px 0 2px; }
+  .free-tag { font-size:11px; color:var(--ok); background:var(--ok-soft); padding:1px 6px;
+    border-radius:4px; margin-left:6px; font-weight:600; }
+  .star { color:var(--amber); font-weight:700; cursor:help; }
+
+  .headline { display:flex; flex-wrap:wrap; gap:16px; align-items:flex-end; margin-bottom:4px; }
+  .big { font-size:40px; font-weight:700; letter-spacing:-0.02em; line-height:1; }
+  .big .unit { font-size:16px; color:var(--muted); font-weight:500; margin-left:6px; }
+  .verdict { padding:6px 12px; border-radius:999px; font-size:13px; font-weight:600; }
+  .verdict.ok { background:var(--ok-soft); color:var(--ok); }
+  .verdict.warn { background:var(--warn-soft); color:var(--warn); }
+  .verdict.amber { background:var(--amber-soft); color:var(--amber); }
+
+  .meter { margin:16px 0; }
+  .meter-top { display:flex; justify-content:space-between; font-size:13px; margin-bottom:5px; }
+  .meter-top .lbl { font-weight:600; }
+  .meter-top .fig { color:var(--muted); font-variant-numeric:tabular-nums; }
+  .bar { position:relative; height:26px; background:var(--track); border-radius:6px; overflow:hidden; }
+  .bar .fill { position:absolute; left:0; top:0; bottom:0; border-radius:6px 0 0 6px; transition:width .25s ease, background .25s ease; }
+  .bar .fill.ok { background:var(--ok); } .bar .fill.amber { background:var(--amber); } .bar .fill.warn { background:var(--warn); }
+  .bar .cap { position:absolute; top:-2px; bottom:-2px; width:2px; background:var(--ink); opacity:.55; }
+
+  .kpis { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:10px; margin-top:4px; }
+  .kpi { background:var(--bg); border:1px solid var(--line); border-radius:8px; padding:12px; }
+  .kpi .k { font-size:22px; font-weight:700; letter-spacing:-0.01em; }
+  .kpi .kl { font-size:11px; color:var(--muted); text-transform:uppercase; letter-spacing:0.04em; margin-top:2px; }
+
+  .breakdown { width:100%; border-collapse:collapse; margin-top:6px; font-size:13px; }
+  .breakdown th { text-align:left; color:var(--muted); font-weight:600; padding:6px 8px; border-bottom:1px solid var(--line);
+    font-size:11px; text-transform:uppercase; letter-spacing:0.04em; }
+  .breakdown td { padding:7px 8px; border-bottom:1px solid var(--line); }
+  .breakdown td.r { text-align:right; font-variant-numeric:tabular-nums; }
+  .breakdown tr.free td { color:var(--ok); }
+  .breakdown tr.total td { font-weight:700; border-top:1px solid var(--ink); border-bottom:none; }
+
+  .allow-lines { margin-top:6px; font-size:12.5px; color:var(--muted); }
+  .allow-lines .al { display:flex; justify-content:space-between; padding:3px 0; }
+  .allow-lines .al .dot { display:inline-block; width:8px; height:8px; border-radius:50%; margin-right:6px; vertical-align:middle; }
+  .allow-lines .al .dot.Standard{background:var(--std);} .allow-lines .al .dot.Premium{background:var(--prem);} .allow-lines .al .dot.Enterprise{background:var(--ent);}
+
+  .note { font-size:12.5px; color:var(--muted); margin-top:14px; line-height:1.5; }
+  .note a { color:var(--prem); }
+  .note strong { color:var(--ink); }
+
+  .numfield { margin:12px 0 4px; }
+  .numfield label { display:block; font-size:13px; font-weight:600; margin-bottom:4px; }
+  .numfield .row { display:flex; align-items:center; gap:10px; }
+  .numfield input { width:90px; padding:7px 9px; border:1px solid var(--line); border-radius:7px; font:inherit; }
+  .numfield .hint { font-size:12px; color:var(--muted); font-weight:400; }
+
+  .glossary { margin-top:14px; border:1px solid var(--line); border-radius:8px; overflow:hidden; }
+  .glossary summary { cursor:pointer; padding:10px 14px; font-size:13px; font-weight:600; list-style:none; background:var(--bg); }
+  .glossary summary::-webkit-details-marker { display:none; }
+  .glossary summary::before { content:"▸ "; color:var(--muted); }
+  .glossary[open] summary::before { content:"▾ "; }
+  .glossary .gbody { padding:6px 14px 14px; font-size:12.5px; color:var(--muted); line-height:1.5; }
+  .glossary .gbody dt { font-weight:600; color:var(--ink); margin-top:10px; }
+  .glossary .gbody dd { margin:2px 0 0; }
+
+  .rec { margin-top:16px; border:1px solid var(--prem); background:var(--prem-soft); border-radius:8px; padding:12px 14px; font-size:12.5px; }
+  .rec .rh { font-weight:600; color:var(--prem); margin-bottom:4px; }
+  .rec ul { margin:6px 0 0; padding-left:18px; }
+  .rec li { margin:2px 0; }
+
+  .chart-wrap { position:relative; width:100%; height:clamp(200px,30vh,260px); overflow:hidden; margin-bottom:14px; }
+  .chart-legend { display:flex; flex-wrap:wrap; gap:10px 16px; justify-content:center; font-size:12px; color:var(--muted); margin-bottom:6px; }
+  .chart-legend span { display:inline-flex; align-items:center; gap:5px; }
+  .chart-legend .sw { width:10px; height:10px; border-radius:2px; display:inline-block; }
+  /* disabled/coming-soon slider */
+  .slider-row.disabled { opacity:.55; }
+  .slider-row.disabled input[type=range]{ pointer-events:none; }
+  .tbd-tag { font-size:11px; color:var(--muted); background:var(--track); padding:1px 6px; border-radius:4px; margin-left:6px; font-weight:600; }
+</style>
+</head>
+<body>
+  <div class="topbar">
+    <span class="logo-dot"></span>
+    <h1>Rovo Credit Estimator</h1>
+    <span class="sub">model monthly usage against your pooled allowance</span>
+    <span class="verified" id="verifiedBadge">rates: —</span>
+    <span class="ver" id="offlineBadge" style="display:none;background:var(--amber-soft);color:var(--amber)">offline demo — rates embedded</span>
+    <span class="ver">v2.1</span>
+  </div>
+
+  <div class="wrap" id="app">
+    <div class="intro" style="grid-column:1/-1">Loading rate card…</div>
+  </div>
+
+<script>
+// ============================================================================
+// Rovo Credit Estimator v2.0 — reads ALL numbers from ../data/rovo-rates.json
+// via the shared RovoData loader. No hardcoded rates/allowances/bands.
+// ============================================================================
+let CFG, ALLOW, APPS, TIERS, ACTS;
+let splitChart = null;
+const DAYS = 1; // activity entered per user per MONTH
+
+let state = {
+  apps: {},
+  activeUsers: 40,
+  activeUsersTouched: false,
+  autoRuns: 0,
+  acts: {}
+};
+
+RovoData.load().then(cfg => {
+  CFG = cfg;
+  // ---- hydrate structures from config ----
+  ALLOW = CFG.allowances.byEdition;
+  APPS  = CFG.allowances.apps;
+  TIERS = CFG.allowances.editions;
+  // Build the activity list from the rate card — only interactions flagged as estimator
+  // sliders (excludes retired modes like Deep Research and not-yet-GA modes like Max).
+  ACTS = CFG.rateCard.interactions.filter(i => i.estimatorSlider).map(i => ({
+    id: i.id, name: i.name, rate: i.rate, free: !!i.free, disabled: !!i.disabled,
+    variable: !!i.variable, note: i.variable ? ("variable ~" + i.rangeLow + "-" + i.rangeHigh + "+") : null,
+    def: defaultFor(i.id), max: maxFor(i.id), step: 1
+  }));
+  state.apps = {
+    "Jira":                { on:false, tier:"Premium",  seats:100 },
+    "Confluence":          { on:false, tier:"Standard", seats:100 },
+    "Service Mgmt / JSM":  { on:false, tier:"Standard", seats:50 },
+    "Teamwork Collection": { on:true,  tier:"Premium",  seats:100 }
+  };
+  state.acts = Object.fromEntries(ACTS.map(a => [a.id, a.def]));
+  document.getElementById("verifiedBadge").textContent = "rates verified " + RovoData.lastVerifiedDMY();
+  if (RovoData.isFallback()) {
+    document.getElementById("offlineBadge").style.display = "inline-block";
+  }
+  buildUI();
+}).catch(err => {
+  document.getElementById("app").innerHTML =
+    '<div class="intro" style="grid-column:1/-1;color:var(--warn)"><strong>Could not load rate card.</strong> '
+    + 'Ensure <code>data/rovo-rates.json</code> is deployed alongside this tool. (' + err.message + ')</div>';
+});
+
+// sensible default slider positions / maxima per activity id
+function defaultFor(id){ return ({search:20,summary:12,chat:1,agent:0,create:0,think:0,deep:0})[id] ?? 0; }
+function maxFor(id){ return ({search:200,summary:200,chat:200,agent:200,create:40,think:60,deep:40})[id] ?? 100; }
+
+const ACTIVE_FRACTION = () => CFG.benchmarkBands.activeFractionDefault;
+
+// Render a source citation for a caveat: links the named source and shows the
+// config's last-verified date, so "last checked" updates on re-verify (no hard dates).
+function srcCite(key){
+  const s = CFG._meta.sources && CFG._meta.sources[key];
+  if(!s) return "";
+  const label = s.status === "unverified" ? "unverified" : "source";
+  return `<span class="hint">[<a href="${s.url}" target="_blank" rel="noopener" title="${s.title}">${label}</a>, last checked ${RovoData.lastVerifiedDMY()}]</span>`;
+}
+
+// ---------------------------------------------------------------------------
+function buildUI(){
+  const wrap = document.getElementById("app");
+  wrap.innerHTML = `
+    <div class="intro">
+      <h2>How to use this estimator</h2>
+      <ol>
+        <li><strong>Pick your apps and their editions.</strong> Check each app/collection you own and set its edition — they can differ. Seats set the allowance.</li>
+        <li><strong>Set active users.</strong> The people actually using Rovo each month — read the <strong>Chat + Agent users</strong> line from Customer 360's Rovo capabilities MAU panel, averaged over the last 3 months. Not the headline AI MAU (which counts free search). Usually far fewer than seats. This drives usage; seats drive allowance.</li>
+        <li><strong>Set activity per active user/month.</strong> Benchmark bands from Atlassian's official calculator: <strong>Low ~${CFG.benchmarkBands.low.requestsPerUserMonth}, Medium ~${CFG.benchmarkBands.medium.requestsPerUserMonth}, High ~${CFG.benchmarkBands.high.requestsPerUserMonth}</strong> chat/agent requests per user/month (Atlassian itself ~${CFG.benchmarkBands.atlassianInternal.requestsPerUserMonth}). Search & summaries are free; chat/agents are flat ${RovoData.rate("chat")} credits.</li>
+        <li><strong>Add automation runs.</strong> Agent runs fired by a rule with no human present — org-wide, per month. Counted separately from active users.</li>
+        <li><strong>Read the result.</strong> The meter, chart, and summary show projected monthly usage vs. your pooled allowance.</li>
+      </ol>
+      <p class="foot">Credits are pooled org-wide, reset monthly, don't roll over. Think Deeper is variable (~${CFG.rateCard.interactions.find(i=>i.id==='think').rangeLow}–${CFG.rateCard.interactions.find(i=>i.id==='think').rangeHigh}+ cr); this tool uses a mid-point. Figures are directional planning estimates, not a billing quote.</p>
+      <div style="margin-top:12px;background:var(--warn-soft);border:1px solid #e9a59f;border-radius:8px;padding:12px 14px;font-size:12.5px;color:var(--ink);">
+        <strong style="color:var(--warn);">Directional only — not a quote.</strong> ${CFG._meta.disclaimer}
+      </div>
+      <details class="glossary"><summary>What do these terms mean? (glossary)</summary>
+        <div class="gbody"><dl id="glossaryBody"></dl></div>
+      </details>
+    </div>
+
+    <!-- CONTROLS -->
+    <div>
+      <div class="card"><div class="card-h">1 · Apps, editions &amp; seats</div><div class="card-b" id="appList"></div></div>
+      <div class="card" style="margin-top:20px"><div class="card-h">2 · Active users / month</div>
+        <div class="card-b">
+          <div class="numfield"><label>How many people use Rovo in a typical month?</label>
+            <div class="row"><input type="number" id="activeUsers" min="1" value="100"><span class="hint" id="activeHint"></span></div>
+          </div>
+          <p class="note" id="activeUsersNote" style="margin-top:8px"></p>
+        </div>
+      </div>
+      <div class="card" style="margin-top:20px"><div class="card-h">3 · Activity per active user / month</div><div class="card-b" id="sliders"></div></div>
+      <div class="card" style="margin-top:20px"><div class="card-h">4 · Automation (org-wide)</div>
+        <div class="card-b">
+          <div class="numfield"><label>Agent runs on automation rules — per month</label>
+            <div class="row"><input type="number" id="autoRuns" min="0" value="0"><span class="hint">≈${CFG.rateCard.automation.creditsPerRun} cr each</span></div></div>
+          </div>
+          <p class="note" id="autoNote" style="margin-top:8px"></p>
+        </div>
+      </div>
+    </div>
+
+    <!-- RESULTS -->
+    <div>
+      <div class="card"><div class="card-h">Projected monthly consumption</div>
+        <div class="card-b">
+          <div class="headline"><div class="big" id="usedTotal">0<span class="unit">credits / mo</span></div><div class="verdict ok" id="verdict">Within allowance</div></div>
+          <div class="meter"><div class="meter-top"><span class="lbl">Org usage vs. pooled allowance</span><span class="fig" id="orgFig"></span></div>
+            <div class="bar"><div class="fill ok" id="orgFill" style="width:0%"></div><div class="cap" style="left:100%"></div></div>
+          </div>
+          <div class="allow-lines" id="allowLines"></div>
+          <div class="kpis">
+            <div class="kpi"><div class="k" id="kPerUser">0</div><div class="kl">Credits / active user / mo</div></div>
+            <div class="kpi"><div class="k" id="kAllow">0</div><div class="kl">Pooled allowance</div></div>
+            <div class="kpi"><div class="k" id="kHeadroom">0%</div><div class="kl">Allowance used</div></div>
+          </div>
+          <div class="rec" id="rec"></div>
+          <div class="rec" id="forecast" style="border-color:var(--amber);background:var(--amber-soft)"></div>
+        </div>
+      </div>
+      <div class="card" style="margin-top:20px"><div class="card-h">Where the credits go <span style="text-transform:none;font-weight:400;color:var(--muted)">(org / month)</span></div>
+        <div class="card-b">
+          <div class="chart-legend" id="chartLegend"></div>
+          <div class="chart-wrap"><canvas id="splitChart"></canvas></div>
+          <div class="rec" id="summary"></div>
+          <table class="breakdown" id="breakdown"><thead><tr><th>Activity</th><th class="r">Per mo</th><th class="r">Rate</th><th class="r">Credits / mo</th></tr></thead><tbody></tbody></table>
+          <p class="note" id="note"></p>
+        </div>
+      </div>
+      <div class="card" style="margin-top:20px"><div class="card-h">What this doesn't include</div>
+        <div class="card-b"><p class="note" id="spendOnlyNote" style="margin-top:0"></p></div>
+      </div>
+    </div>`;
+
+  renderGlossary();
+  renderApps();
+  renderSliders();
+  wireInputs();
+  document.getElementById("autoNote").innerHTML =
+    `Agent runs fired by an automation rule, with <strong>no human present</strong> (e.g. a rule on "every new ticket"). Count these here, not as active users. One event rule can fire many times a month.`;
+  // Active-users note: how a CSM reads this number from Customer 360 (from the shared config).
+  const au = RovoData.term("activeUsers");
+  document.getElementById("activeUsersNote").innerHTML =
+    `<strong>Seats set the allowance; active users drive usage.</strong> ${au.howToRead}`;
+  // Spend-only products note: names pool-spenders that add no allowance (from shared config),
+  // with a link to the Capabilities page for the full fund-vs-spend breakdown.
+  const cap = CFG._meta.sources && CFG._meta.sources.capabilities;
+  let spendNote = RovoData.label("spendOnlyNote");
+  if (cap) spendNote = spendNote.replace("the Capabilities page", `<a href="${cap.url}" target="_blank" rel="noopener">the Capabilities page</a>`);
+  document.getElementById("spendOnlyNote").innerHTML = spendNote;
+  syncActiveUsers();
+  calc();
+}
+
+function renderGlossary(){
+  const dl = document.getElementById("glossaryBody");
+  const t = CFG.terminology;
+  const items = [
+    ["Seats (licensed users)", t.seats.definition],
+    ["Active users (credit consumers)", t.activeUsers.definition + " " + t.activeUsers.howToRead],
+    ["Credits", t.credits.definition + " Not " + t.credits.notEqualTo + "."],
+    ["Interaction (billable request)", t.interaction.definition],
+    ["Automation run", t.automationRun.definition],
+    ["Reasoning tiers — all one currency", "Quick Answers, Think Deeper, and Max (Marathon) all spend the SAME Rovo credits — there is no separate 'Max' currency. The tiers just cost more as they reason harder: Quick Answers (flat 10) → Think Deeper (variable ~50–100+) → Max (highest, coming soon, price TBD). Create with Rovo is also Rovo credits (~70). The only genuinely separate pool is Rovo Dev (coding agents). Deep Research is being retired from agent tiers — use Think Deeper."],
+    ["Free actions", "Search, summaries, definitions, chart insights = 0 credits today — including Rovo Search across third-party connected apps (Slack, Google Drive, GitLab, Box). Free across UI, public APIs, and MCP. Assumes interactive search, not web search."]
+  ];
+  dl.innerHTML = items.map(([k,v]) => `<dt>${k}</dt><dd>${v}</dd>`).join("");
+}
+
+// ---- per-app rows ----
+function renderApps(){
+  const appList = document.getElementById("appList");
+  appList.innerHTML = "";
+  APPS.forEach(app => {
+    const s = state.apps[app];
+    const row = document.createElement("div");
+    row.className = "approw" + (s.on ? " on" : "");
+    row.dataset.plan = s.tier;
+    row.innerHTML = `
+      <div class="approw-top"><input type="checkbox" ${s.on?"checked":""}>
+        <span class="approw-name">${app}</span>
+        <span class="approw-alw">${ALLOW[s.tier][app]} cr/user</span></div>
+      <div class="approw-ctl ${s.on?"":"off"}">
+        <div class="plan-seg">${TIERS.map(tt=>`<button data-plan="${tt}" class="${tt===s.tier?"on":""}">${tt}</button>`).join("")}</div>
+        <span class="seats">seats <input type="number" min="1" max="50000" value="${s.seats}"></span></div>`;
+    row.querySelector('input[type=checkbox]').addEventListener("change", e => { s.on=e.target.checked; renderApps(); syncActiveUsers(); calc(); });
+    row.querySelectorAll(".plan-seg button").forEach(b => b.addEventListener("click", () => { s.tier=b.dataset.plan; renderApps(); calc(); }));
+    const seatInput = row.querySelector(".seats input");
+    seatInput.addEventListener("input", e => { let v=parseInt(e.target.value||"1",10); if(isNaN(v))v=1; s.seats=Math.min(50000,Math.max(1,v)); syncActiveUsers(); calc(); });
+    seatInput.addEventListener("blur", e => { e.target.value=s.seats; });
+    appList.appendChild(row);
+  });
+}
+
+function renderSliders(){
+  const slidersEl = document.getElementById("sliders");
+  slidersEl.innerHTML = "";
+  // Hover explanations per slider — brief "what this is", no credit detail. Any slider
+  // with an entry shows a * so users know there's a tooltip.
+  const TIPS = {
+    chat:   "A person asking Rovo Chat a quick question.",
+    agent:  "A person running a Rovo agent. Rule-fired agents with no human go in §4 Automation.",
+    create: "Confluence: generate a full page or document from a prompt.",
+    think:  "A stronger reasoning tier — plans, searches the Teamwork Graph, and iterates. For analysis, not quick lookups.",
+    search: "Find things across Atlassian and connected apps.",
+    summary:"Summaries, definitions, and chart insights."
+  };
+  ACTS.forEach(a => {
+    const row = document.createElement("div");
+    row.className = "slider-row" + (a.disabled ? " disabled" : "");
+    const tip = TIPS[a.id];
+    const nameTip = tip ? ` title="${tip.replace(/"/g,'&quot;')}"` : '';
+    const star = tip ? '<span class="star">*</span>' : '';
+    if (a.disabled) {
+      // Coming-soon tier (e.g. Max): greyed out, no value, TBD tag, not interactive.
+      row.innerHTML = `
+        <div class="slider-top"><span class="name"${nameTip}>${a.name}${star}<span class="tbd-tag">Coming soon · TBD</span></span>
+          <span><span class="cost">rate TBD</span></span></div>
+        <input type="range" min="0" max="100" value="0" disabled>`;
+      slidersEl.appendChild(row);
+      return;
+    }
+    row.innerHTML = `
+      <div class="slider-top"><span class="name"${nameTip}>${a.name}${a.free?'<span class="free-tag">FREE</span>':''}${star}</span>
+        <span><span class="val" id="v-${a.id}"></span><span class="cost">${a.free?'':(a.note?a.note:a.rate+' cr ea')}</span></span></div>
+      <input type="range" id="s-${a.id}" min="0" max="${a.max}" step="${a.step}" value="${a.def}">`;
+    slidersEl.appendChild(row);
+    row.querySelector("input").addEventListener("input", e => { state.acts[a.id]=parseFloat(e.target.value); calc(); });
+  });
+}
+
+function wireInputs(){
+  const activeEl = document.getElementById("activeUsers");
+  activeEl.value = state.activeUsers;
+  activeEl.addEventListener("input", e => { let v=parseInt(e.target.value||"1",10); if(isNaN(v))v=1; state.activeUsers=Math.max(1,v); state.activeUsersTouched=true; calc(); });
+  const autoEl = document.getElementById("autoRuns");
+  autoEl.addEventListener("input", e => { let v=parseInt(e.target.value||"0",10); if(isNaN(v))v=0; state.autoRuns=Math.max(0,v); calc(); });
+}
+
+// ---- Customer 360 import: removed in this phase; planned for a later phase. ----
+// The config still carries the c360Mapping block (panels/footprint) as data for that work.
+
+
+function syncActiveUsers(){
+  if(state.activeUsersTouched) return;
+  const seats = APPS.filter(a=>state.apps[a].on).reduce((s,a)=>s+state.apps[a].seats,0);
+  const suggested = Math.max(1, Math.round(seats*ACTIVE_FRACTION()));
+  state.activeUsers = suggested;
+  const el = document.getElementById("activeUsers");
+  if(el) el.value = suggested;
+}
+
+function activeApps(){ return APPS.filter(a=>state.apps[a].on); }
+function perUserCredits(){ let t=0; ACTS.forEach(a=>{ if(a.disabled) return; t+=state.acts[a.id]*DAYS*a.rate; }); return t; }
+
+function calc(){
+  ACTS.forEach(a => { const v=state.acts[a.id]; const el=document.getElementById("v-"+a.id); if(el) el.textContent=(Number.isInteger(v)?v:v.toFixed(1))+"/mo"; });
+
+  const active = activeApps();
+  const perUser = perUserCredits();
+  const totalSeats = active.reduce((s,a)=>s+state.apps[a].seats,0);
+  const orgAllow = active.reduce((s,a)=>s+ALLOW[state.apps[a].tier][a]*state.apps[a].seats,0);
+  const activeUsers = Math.min(state.activeUsers, totalSeats||state.activeUsers);
+  const autoCredits = state.autoRuns * CFG.rateCard.automation.creditsPerRun;
+  const orgUsed = perUser*activeUsers + autoCredits;
+  const perUserAllowAvg = totalSeats>0 ? orgAllow/totalSeats : 0;
+  const pct = orgAllow>0 ? (orgUsed/orgAllow)*100 : 0;
+
+  const aHint = document.getElementById("activeHint");
+  if(aHint) aHint.textContent = totalSeats>0 ? `of ${totalSeats.toLocaleString()} seats${state.activeUsersTouched?"":` · auto-set to ~${Math.round(ACTIVE_FRACTION()*100)}%`}` : "select an app first";
+
+  document.getElementById("usedTotal").innerHTML = Math.round(orgUsed).toLocaleString()+'<span class="unit">credits / mo</span>';
+  document.getElementById("kPerUser").textContent = Math.round(perUser).toLocaleString();
+  document.getElementById("kAllow").textContent = Math.round(orgAllow).toLocaleString();
+  document.getElementById("kHeadroom").textContent = Math.round(pct)+"%";
+  document.getElementById("orgFig").textContent = Math.round(orgUsed).toLocaleString()+" / "+Math.round(orgAllow).toLocaleString()+" cr";
+
+  const fill=document.getElementById("orgFill");
+  fill.style.width = Math.min(pct,100)+"%";
+  const verdict=document.getElementById("verdict"); let cls;
+  if(orgAllow===0){cls="amber";verdict.textContent="No apps selected";}
+  else if(pct<=80){cls="ok";verdict.textContent="Within allowance";}
+  else if(pct<=100){cls="amber";verdict.textContent="Approaching limit";}
+  else{cls="warn";verdict.textContent="Rolls into overage";}
+  fill.className="fill "+cls; verdict.className="verdict "+cls;
+
+  const al=document.getElementById("allowLines");
+  al.innerHTML = active.map(a=>{ const each=ALLOW[state.apps[a].tier][a];
+    return `<div class="al"><span><span class="dot ${state.apps[a].tier}"></span>${a} · ${state.apps[a].tier}</span><span>${each} × ${state.apps[a].seats.toLocaleString()} = ${(each*state.apps[a].seats).toLocaleString()} cr</span></div>`;}).join("");
+
+  renderRec(orgAllow, orgUsed, activeUsers);
+  renderForecast(orgAllow, orgUsed);
+  renderBreakdown(active, perUser, activeUsers, autoCredits, orgUsed, pct, orgAllow, perUserAllowAvg);
+}
+
+function renderRec(orgAllow, orgUsed, activeUsers){
+  const rec=document.getElementById("rec");
+  if(orgAllow===0){ rec.style.display="none"; return; } rec.style.display="block";
+  const remaining=orgAllow-orgUsed;
+  if(remaining<=0){
+    const over=Math.round(orgUsed-orgAllow); const cutFlat=Math.ceil(over/RovoData.rate("chat"));
+    rec.innerHTML=`<div class="rh">No headroom left — you're over</div>
+      <div>Usage <strong>${Math.round(orgUsed).toLocaleString()}</strong> vs. <strong>${Math.round(orgAllow).toLocaleString()}</strong> — over by <strong>${over.toLocaleString()} cr/mo</strong>.</div>
+      <ul><li>cut ~<strong>${cutFlat.toLocaleString()}</strong> chat/agent actions/mo, <em>or</em></li>
+      <li>reduce active users / automation, <em>or</em></li>
+      <li>add capacity — Teamwork Collection, higher edition, or a prepaid pack.</li></ul>`;
+  } else {
+    const flatLeft=Math.floor(remaining/RovoData.rate("chat")), thinkLeft=Math.floor(remaining/RovoData.rate("think"));
+    rec.innerHTML=`<div class="rh">Headroom left — room on top of current usage</div>
+      <div><strong>${Math.round(remaining).toLocaleString()}</strong> credits remain (~<strong>${Math.round(remaining/activeUsers).toLocaleString()}</strong>/active user). Covers about:</div>
+      <ul><li><strong>${flatLeft.toLocaleString()}</strong> more chat/agent actions, <em>or</em></li>
+      <li><strong>${thinkLeft.toLocaleString()}</strong> more Think Deeper runs.</li></ul>`;
+  }
+}
+
+// NEW: forecast — when does the org exhaust allowance at current pace + weak-usage nudges
+function renderForecast(orgAllow, orgUsed){
+  const f=document.getElementById("forecast");
+  if(orgAllow===0 || orgUsed===0){ f.style.display="none"; return; } f.style.display="block";
+  const monthsToExhaust = orgUsed>0 ? (orgAllow/orgUsed) : Infinity;
+  let line;
+  if(orgUsed<=orgAllow){
+    line = `At this pace the org uses <strong>${Math.round(orgUsed/orgAllow*100)}%</strong> of allowance/month — comfortably renewing. `;
+  } else {
+    line = `At this pace the org burns the full monthly allowance in <strong>~${(monthsToExhaust*30).toFixed(0)} days</strong> and rolls into overage. `;
+  }
+  // weak-usage nudges: which billable levers are unused → conversation openers
+  const unused=[];
+  if(state.acts.agent===0) unused.push("agents");
+  if(state.acts.think===0) unused.push("heavier reasoning (Think Deeper)");
+  if(state.autoRuns===0) unused.push("automation-triggered agents");
+  const nudge = unused.length ? `<div style="margin-top:6px"><strong>Adoption openers:</strong> low/no usage of ${unused.join(", ")} — natural next-conversation levers.</div>` : "";
+  f.innerHTML = `<div class="rh" style="color:var(--amber)">Forecast &amp; adoption</div><div>${line}</div>${nudge}`;
+}
+
+function renderBreakdown(active, perUser, activeUsers, autoCredits, orgUsed, pct, orgAllow, perUserAllowAvg){
+  const tb=document.querySelector("#breakdown tbody"); tb.innerHTML="";
+  ACTS.forEach(a=>{ if(a.disabled) return; const perMo=state.acts[a.id]*DAYS*a.rate; const tr=document.createElement("tr");
+    if(a.free) tr.className="free";
+    const per=Number.isInteger(state.acts[a.id])?state.acts[a.id]:state.acts[a.id].toFixed(1);
+    tr.innerHTML=`<td>${a.name}</td><td class="r">${per}</td><td class="r">${a.free?'free':(a.note?('~'+a.rate):a.rate)}</td><td class="r">${a.free?'0':Math.round(perMo).toLocaleString()}</td>`;
+    tb.appendChild(tr); });
+  const tot=document.createElement("tr"); tot.className="total";
+  tot.innerHTML=`<td>Total per active user</td><td class="r"></td><td class="r"></td><td class="r">${Math.round(perUser).toLocaleString()}</td>`; tb.appendChild(tot);
+  const orgRow=document.createElement("tr");
+  orgRow.innerHTML=`<td>× ${activeUsers.toLocaleString()} active users</td><td class="r"></td><td class="r"></td><td class="r">${Math.round(perUser*activeUsers).toLocaleString()}</td>`; tb.appendChild(orgRow);
+  const autoRow=document.createElement("tr");
+  autoRow.innerHTML=`<td>Automation (org-wide)</td><td class="r">${state.autoRuns.toLocaleString()}/mo</td><td class="r">${CFG.rateCard.automation.creditsPerRun}</td><td class="r">${Math.round(autoCredits).toLocaleString()}</td>`; tb.appendChild(autoRow);
+  const grand=document.createElement("tr"); grand.className="total";
+  grand.innerHTML=`<td><strong>Org total / month</strong></td><td class="r"></td><td class="r"></td><td class="r"><strong>${Math.round(orgUsed).toLocaleString()}</strong></td>`; tb.appendChild(grand);
+
+  // chart
+  const catLabels=["Chat","Agents","Create","Think Deeper","Automation"];
+  const catColors=["rgba(0,0,0,0.06)","rgba(12,102,228,0.20)","rgba(12,102,228,0.38)","rgba(165,72,0,0.45)","rgba(110,93,198,0.5)"];
+  const catBorders=["rgba(0,0,0,0.4)","rgba(12,102,228,0.6)","rgba(12,102,228,0.75)","rgba(165,72,0,0.7)","rgba(110,93,198,0.75)"];
+  const catVals=[
+    state.acts.chat*DAYS*RovoData.rate("chat")*activeUsers,
+    state.acts.agent*DAYS*RovoData.rate("agent")*activeUsers,
+    state.acts.create*DAYS*RovoData.rate("create")*activeUsers,
+    state.acts.think*DAYS*RovoData.rate("think")*activeUsers,
+    autoCredits];
+  const catTotal=catVals.reduce((a,b)=>a+b,0);
+  document.getElementById("chartLegend").innerHTML=catLabels.map((l,i)=>catVals[i]>0?`<span><span class="sw" style="background:${catBorders[i]}"></span>${l}</span>`:"").join("");
+  const ctx=document.getElementById("splitChart"); const dataVals=catVals.map(v=>Math.round(v));
+  if(splitChart){ splitChart.data.datasets[0].data=dataVals; splitChart.update(); }
+  else { splitChart=new Chart(ctx,{type:"doughnut",data:{labels:catLabels,datasets:[{data:dataVals,backgroundColor:catColors,borderColor:catBorders,borderWidth:1}]},
+    options:{responsive:true,maintainAspectRatio:false,cutout:"58%",plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>` ${c.label}: ${c.parsed.toLocaleString()} cr (${catTotal>0?Math.round(c.parsed/catTotal*100):0}%)`}}}}}); }
+
+  const summary=document.getElementById("summary");
+  if(catTotal===0){ summary.innerHTML=`<div class="rh">Summary</div><div>No billable activity yet.</div>`; }
+  else { let topI=0; catVals.forEach((v,i)=>{ if(v>catVals[topI])topI=i; });
+    const topPct=Math.round(catVals[topI]/catTotal*100); const heavyShare=Math.round(catVals[3]/catTotal*100);
+    let advice = pct>100?`You're <strong>over allowance</strong>. Biggest lever: reduce <strong>${catLabels[topI]}</strong>, move to Teamwork Collection, or add a prepaid pack.`
+      : pct>80?`<strong>Approaching the limit.</strong> Watch <strong>${catLabels[topI]}</strong>.`
+      : `<strong>Comfortably within budget</strong> — room to grow adoption.`;
+    summary.innerHTML=`<div class="rh">Summary &amp; recommendation</div><div><strong>${catLabels[topI]}</strong> is the biggest driver at <strong>${topPct}%</strong>.${heavyShare>0?` Heavy modes ${heavyShare}%.`:``} ${advice}</div>`;
+  }
+
+  const note=document.getElementById("note");
+  if(orgAllow===0) note.innerHTML="Select at least one app to set an allowance.";
+  else if(pct>100) note.innerHTML=`At this pace the org exceeds its pooled allowance. Move a lower-tier app up an edition, shift routine work to flat Quick Answers, or add a prepaid pack. Overage is billed only if an admin opts in, with 90 days' notice.`;
+  else if(pct>80) note.innerHTML=`Using <strong>${Math.round(pct)}%</strong> of the pooled allowance — approaching the limit.`;
+  else note.innerHTML=`Comfortably within budget. Pooled headroom absorbs uneven usage — heavy users can exceed the ~${Math.round(perUserAllowAvg)} cr/user average as long as the org total stays under ${Math.round(orgAllow).toLocaleString()}. Source: <a href="${CFG._meta.sourceOfTruth.official}" target="_blank" rel="noopener">Rovo usage allowance</a>.`;
+}
+</script>
+</body>
+</html>

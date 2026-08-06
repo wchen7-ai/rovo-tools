@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rules of Thumb — Revised Draft (preview)</title>
+<style>
+  :root{
+    --paper:#f4f1ea; --ink:#1c1a17; --muted:#6f6a61; --line:#d9d3c7; --card:#fffdf8;
+    --accent:#2b60d9; --ga:#2f7d46; --beta:#b8720d; --verify:#a23c3c; --gold:#8a6316;
+    --san:"Helvetica Neue",Arial,sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--paper);color:var(--ink);
+    font-family:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,serif;line-height:1.55;
+    padding:clamp(20px,4vw,56px) clamp(16px,4vw,56px) 80px;
+    background-image:radial-gradient(circle at 1px 1px, rgba(0,0,0,0.02) 1px, transparent 0);background-size:22px 22px;}
+  .wrap{max-width:820px;margin:0 auto;}
+  .draftbar{background:#fff8e6;border:1px solid #e6d3ac;border-left:5px solid var(--beta);border-radius:10px;
+    padding:12px 16px;margin-bottom:26px;font-family:var(--san);font-size:13px;color:#5c4a1a;}
+  .draftbar b{color:var(--beta);}
+  h1{font-size:clamp(26px,4.5vw,40px);line-height:1.05;font-weight:normal;letter-spacing:-.01em;margin-bottom:10px;}
+  h2{font-family:var(--san);font-size:19px;font-weight:600;margin:34px 0 10px;padding-top:16px;border-top:2px solid var(--ink);}
+  h3{font-family:var(--san);font-size:15px;font-weight:600;margin:20px 0 8px;color:#3a362f;}
+  p{margin:10px 0;} ul{margin:10px 0 10px 22px;} li{margin:5px 0;}
+  a{color:var(--accent);text-decoration:none;border-bottom:1px solid rgba(43,96,217,.3);}
+  a:hover{border-bottom-color:var(--accent);}
+  strong{color:var(--ink);}
+  code{background:#efeadf;padding:1px 5px;border-radius:4px;font-size:.9em;}
+  .lead{font-size:16px;color:#3a362f;}
+  table{width:100%;border-collapse:collapse;margin:14px 0;font-family:var(--san);font-size:13.5px;}
+  th{text-align:left;background:#f0ebe0;border:1px solid var(--line);padding:8px 10px;font-size:12px;letter-spacing:.03em;text-transform:uppercase;color:var(--gold);}
+  td{border:1px solid var(--line);padding:8px 10px;vertical-align:top;}
+  tr:nth-child(even) td{background:#faf7f0;}
+  .callout{border-radius:10px;padding:12px 16px;margin:14px 0;font-size:14px;font-family:var(--san);line-height:1.5;}
+  .callout.retired{background:rgba(162,60,60,.07);border:1px solid rgba(162,60,60,.3);border-left:5px solid var(--verify);}
+  .callout.tbd{background:#f2eee4;border:1px solid var(--line);border-left:5px solid var(--muted);}
+  .callout.currency{background:rgba(43,96,217,.06);border:1px solid rgba(43,96,217,.25);border-left:5px solid var(--accent);}
+  .callout.c360{background:rgba(47,125,70,.06);border:1px solid rgba(47,125,70,.3);border-left:5px solid var(--ga);}
+  .callout .lab{font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;display:block;margin-bottom:5px;}
+  .callout.retired .lab{color:var(--verify);} .callout.tbd .lab{color:var(--muted);}
+  .callout.currency .lab{color:var(--accent);} .callout.c360 .lab{color:var(--ga);}
+  .tag{font-family:var(--san);font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:2px 7px;border-radius:5px;}
+  .tag.new{background:rgba(47,125,70,.14);color:var(--ga);}
+  .tag.retired{background:rgba(162,60,60,.12);color:var(--verify);}
+  .tag.tbd{background:#e8e2d4;color:var(--muted);}
+  .companion{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 18px;margin:16px 0;font-family:var(--san);font-size:13.5px;}
+  .companion ul{list-style:none;margin:8px 0 0;padding:0;} .companion li{margin:6px 0;}
+  .changed{border-left:3px solid var(--ga);padding-left:10px;background:rgba(47,125,70,.04);}
+  .footnote{font-family:var(--san);font-size:12px;color:var(--muted);}
+  .legend{font-family:var(--san);font-size:12px;color:var(--muted);margin:10px 0 24px;padding:10px 14px;background:#faf7f0;border:1px solid var(--line);border-radius:8px;}
+  .legend .sw{display:inline-block;width:10px;height:10px;border-radius:2px;vertical-align:middle;margin:0 4px 0 10px;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="draftbar"><b>REVISED DRAFT — preview, not live.</b> Rendered from the Markdown draft for easy reading. Numbers &amp; terminology match the toolkit config (verified 5 Aug 2026). Green-bordered blocks = <b>changed vs. the current live page</b>. Nothing is published until you approve.</div>
+
+  <div class="legend">What's flagged in this preview:
+    <span class="sw" style="background:#2f7d46"></span>green bar = changed from live ·
+    <span class="tag retired">retired</span> Deep Research ·
+    <span class="tag tbd">TBD</span> Max ·
+    <span class="tag new">new</span> added section/link
+  </div>
+
+  <h1>Rovo Credits: Rules of Thumb for Customer Conversations</h1>
+  <p class="lead">A working reference for "how much will Rovo cost us in credits?" during TAS/CSA Rovo engagement — rules of thumb for credit vs. token usage, the rate card, agent-design guidance, governance, and FAQs.</p>
+  <p>Figures are directional planning estimates, not billing quotes. For pricing, always involve the CSM and AE. Contributions welcome.</p>
+  <p class="changed"><strong>This page mirrors the toolkit's single source of truth</strong> — rates and allowances are maintained once and surfaced by the tools below. Rate figures verified <strong>5 Aug 2026</strong>.</p>
+
+  <div class="companion changed"><strong>Companion tools</strong>
+    <ul>
+      <li>• <strong>Official Calculator:</strong> go/rovocalc</li>
+      <li>• <strong><a href="https://wchen7-ai.github.io/rovo-tools/estimator/" target="_blank" rel="noopener">Rovo Credit Estimator</a></strong> — model a customer's monthly usage vs. pooled allowance</li>
+      <li>• <strong><a href="https://wchen7-ai.github.io/rovo-tools/capabilities/" target="_blank" rel="noopener">Rovo Capabilities — by Collection</a></strong> <span class="tag new">new link</span> — what Rovo does per product, fund-vs-spend, full rate card</li>
+      <li>• <strong>Rovo Credit Scenarios</strong> — <span style="color:var(--verify)">retired; use the Estimator instead</span></li>
+    </ul>
+  </div>
+  <p class="footnote changed" style="margin-top:12px;"><em>Thanks to everyone contributing to this reference — Jennifer Yuan, Alana Dyson, and the TAS/CSA AI team.</em></p>
+
+  <h2>I. The one-line answer</h2>
+  <p><strong>Credits ≠ Tokens.</strong> Most everyday usage is a flat <strong>10 credits per request</strong>; what matters is monthly burn against the <strong>pooled allowance</strong>, not per-request cost. A short question and a long one cost the same in standard chat.<sup><a href="https://support.atlassian.com/rovo/docs/rovo-usage-limits/" title="Rovo usage allowance">[1]</a></sup></p>
+  <table>
+    <tr><th></th><th>Credits</th><th>Tokens</th></tr>
+    <tr><td><strong>What it is</strong></td><td>Billing unit customers consume</td><td>Underlying model volume (~100 tokens ≈ 75 words)</td></tr>
+    <tr><td><strong>Who sees it</strong></td><td>Customer — from monthly allowance</td><td>Internal — what the LLM processes</td></tr>
+    <tr><td><strong>How charged</strong></td><td>Fixed 10 cr for chat &amp; agents; variable for heavier modes</td><td>Only drives cost in variable/long-running modes</td></tr>
+    <tr><td><strong>Prompt length</strong></td><td>None — short &amp; long both 10 cr</td><td>Longer prompt = more tokens</td></tr>
+  </table>
+  <p><strong>Mental model:</strong> credits are a <strong>monthly prepaid wallet, not a taxi meter</strong>. Count actions, not words.</p>
+
+  <h2>II. The rate card</h2>
+  <table>
+    <tr><th>Interaction</th><th>Credit cost</th></tr>
+    <tr><td>Search, summaries, definitions, chart insights</td><td>0 (free today)</td></tr>
+    <tr><td>Teamwork Graph API call</td><td>1–10 (reads cost, writes free)</td></tr>
+    <tr><td>Rovo Agent request</td><td>10 (fixed)</td></tr>
+    <tr><td>Rovo Chat — Quick Answer</td><td>10 (fixed)</td></tr>
+    <tr><td>Confluence Create with Rovo</td><td>~70</td></tr>
+    <tr><td>Rovo Chat — Think Deeper</td><td>Variable (~50 simple, 100+ deep; ~75 mid)</td></tr>
+    <tr class="changed"><td>Rovo Chat — Max (Marathon) <span class="tag tbd">TBD</span></td><td><strong>TBD — coming soon</strong> (highest tier; rate not finalised)<sup><a href="https://hello.atlassian.net/wiki/spaces/~7120204cd8d80c30a04786b126ea9de3ddc4e4/pages/7061944198" title="Reasoning &amp; model selection">[10]</a></sup></td></tr>
+  </table>
+  <p>Customer-facing rates above are safe to quote from Atlassian Support.<sup><a href="https://support.atlassian.com/rovo/docs/rovo-usage-limits/" title="Rovo usage allowance">[1]</a></sup> <span style="color:var(--verify)"><strong>Internal / directional</strong> (not on a Support page — don't quote to customers):</span> Atlassian-hosted LLMs apply a ~50% premium (e.g. Quick Answer → ~15 credits).<sup><a href="https://hello.atlassian.net/wiki/spaces/tcsm/pages/7323412132" title="Rovo Credits, LLM tokens &amp; words (internal)">[8]</a></sup></p>
+  <p><strong>Rovo Dev credits are a separate pool</strong> (~5 cr per successful LLM request; 2,000/dev/mo on Standard, $0.01/credit overage).<sup><a href="https://www.atlassian.com/licensing/rovo" title="Rovo Plans &amp; FAQs">[2]</a></sup></p>
+
+  <div class="callout currency"><span class="lab">Changed · reasoning tiers</span>
+    Quick Answers, Think Deeper, and Max all spend the <strong>same</strong> Rovo credits — there is no separate "Max" wallet. Tiers cost more as they reason harder: Quick Answers (10) → Think Deeper (~50–100+) → <strong>Max (coming soon, rate TBD)</strong>. The only genuinely separate pool is Rovo Dev.<sup><a href="https://hello.atlassian.net/wiki/spaces/~7120204cd8d80c30a04786b126ea9de3ddc4e4/pages/7061944198" title="Reasoning &amp; model selection">[10]</a></sup></div>
+
+  <div class="callout retired"><span class="lab">Changed · Deep Research is retired for agents</span>
+    New agents no longer show a Deep Research toggle, and agents never auto-route to it. Steer customers to <strong>Think Deeper</strong> for similar results.<sup><a href="https://hello.atlassian.net/wiki/spaces/~7120204cd8d80c30a04786b126ea9de3ddc4e4/pages/7061944198" title="Reasoning &amp; model selection">[10]</a></sup> <span class="footnote">(Removed from the live rate card, at-a-glance, and forecasting lists.)</span></div>
+
+  <h2>III. Included allowances that fund the pool (per user / month)</h2>
+  <table>
+    <tr><th>App / Collection</th><th>Standard</th><th>Premium</th><th>Enterprise</th></tr>
+    <tr><td>Jira</td><td>25</td><td>70</td><td>150</td></tr>
+    <tr><td>Confluence</td><td>25</td><td>70</td><td>150</td></tr>
+    <tr><td>Service Mgmt / JSM</td><td>25</td><td>70</td><td>150</td></tr>
+    <tr><td>Teamwork Collection</td><td>250</td><td>700</td><td>1,500</td></tr>
+  </table>
+  <p>Credits are <strong>pooled org-wide</strong>, reset monthly, don't roll over.<sup><a href="https://support.atlassian.com/rovo/docs/rovo-usage-limits/" title="Rovo usage allowance">[1]</a></sup> Shortcut: <em>credits ≈ AI actions × 10</em>. A Premium app allowance of 70 ≈ <strong>7 chat/agent requests/user/mo</strong> — individual allowances fill fast; the Teamwork Collection (10×) is the comfortable tier.</p>
+  <p><strong>Technical-buyer nuance:</strong> TWG API calls run 1–10 cr each; <strong>writes are free</strong> (create a Jira issue), <strong>reads cost</strong> (summarize a page). Free all month: Search, summaries, definitions, chart insights.<sup><a href="https://support.atlassian.com/rovo/docs/rovo-usage-limits/" title="Rovo usage allowance">[1]</a></sup></p>
+
+  <h2>IV. Reading a customer's usage &amp; forecasting</h2>
+  <p class="changed"><strong>Active users — the number that drives the estimate.</strong> Define active users by <strong>actual Chat + Agent usage</strong>, not seats and not the headline AI MAU.<sup><a href="https://hello.atlassian.net/wiki/spaces/Rovo/pages/6782683836" title="How Rovo credits work">[16]</a></sup></p>
+  <div class="callout c360"><span class="lab">New · how to read it from Customer 360</span>
+    Open <strong>Cloud Usage → "Rovo capabilities: Monthly active users"</strong> and read the <strong>Chat users (plus Agent users)</strong> line. <strong>Average the last 3 months</strong> for a steadier basis — a single month can be noisy. Don't use <strong>Total AI MAU</strong> or <strong>Search users</strong> — those count free search and aren't credit-consuming users. Seats set the <em>allowance</em>; active users drive <em>usage</em>.</div>
+  <p><strong>Forecast:</strong> <em>(monthly interactions × credits per interaction) vs. pooled allowance</em>. Rough workflow costs (these are <em>batch/whole-job</em> figures, not single actions): a triage rule over ~20 tickets ~200/run (20 × 10) · three bulk-import creates ~150 · one Confluence Create ~70 · a weekly Insights digest ~50. Per single action it's still the flat ~10 cr.<sup><a href="https://support.atlassian.com/organization-administration/docs/gain-insights-into-rovo-ai-activity/" title="Gain insights into Rovo AI activity">[5]</a></sup></p>
+  <p><strong>AI Aha adoption anchor (internal):</strong> meaningful adoption ≈ 10 Rovo Chat messages (~100 cr)/user; product value across Jira + Confluence ≈ <strong>~1.7k credits</strong>.<sup><a href="https://hello.atlassian.net/wiki/spaces/ftw/pages/7189706990" title="Board Paper: Atlassian AI Strategy">[12]</a></sup></p>
+
+  <h3 class="changed">A worked example — "will this org stay within budget?"</h3>
+  <p class="footnote"><em>Illustrative only — round numbers, not a real customer.</em></p>
+  <p>Take a <strong>100-seat Confluence Premium</strong> org. At 70 credits/user, that's <strong>7,000 credits/month pooled</strong> across everyone.<sup><a href="https://support.atlassian.com/rovo/docs/rovo-usage-limits/" title="Rovo usage allowance">[1]</a></sup> Seats set the allowance; active users drive usage.</p>
+  <p class="changed"><strong>The usage bands</strong> (from the official Rovo Calculator's benchmark bands, converted at the flat 10 cr/request): <strong>Light ≈ 1 request/user/mo (~10 cr) · Moderate ≈ 2 (~20 cr) · Heavy ≈ 10 (~100 cr)</strong>. Bands are built from active-customer usage; the ~175 cr aspirational high-water mark is Atlassian's own internal blended average.<sup><a href="https://hello.atlassian.net/wiki/spaces/ftw/pages/7189706990" title="Board Paper: Atlassian AI Strategy">[12]</a></sup></p>
+  <div class="callout c360"><span class="lab">Today's reality — most orgs</span>
+    Real adoption is low — far fewer active users than seats, and credit utilization often in the low single digits. Say <strong>~15 of 100 seats</strong> use Rovo in a month, mostly Light–Moderate (~1–2 requests) → ≈ 15 × ~15 cr = <strong>~225 credits/month against 7,000</strong>, roughly <strong>~3% of the pool</strong>. This matches the field: customers are barely touching their allowance pre-enforcement.</div>
+  <p class="changed"><strong>What changes the picture — heavier adoption + automation:</strong></p>
+  <ul class="changed">
+    <li><strong>~40 active users</strong> at the Moderate–Heavy end (~10 actions/mo, ~100 cr) → ≈ <strong>4,000 credits/month</strong> interactive.</li>
+    <li>Add <strong>automation</strong> — a couple of agent-firing rules at ~30 runs/day org-wide ≈ 600 runs × 10 cr = <strong>~6,000 credits/month</strong>.</li>
+    <li>Interactive (~4,000) + automation (~6,000) = <strong style="color:var(--verify)">~10,000 vs. a 7,000 pool → over</strong>, driven mostly by automation, not the human users.</li>
+  </ul>
+  <div class="callout currency"><span class="lab">Takeaways to keep in your pocket</span>
+    <strong>Most orgs sit well under their pool today</strong> — utilization is low, the headroom is real. <strong>Pooling absorbs uneven human use</strong> — a room of Light users leaves headroom, so a few Heavy users (~175) is fine; no one is capped at their own 70. And <strong>automation is the swing factor</strong>, not per-user chat — one busy event rule can outweigh all the humans combined.</div>
+  <p class="changed"><strong>Model the specific customer in the <a href="https://wchen7-ai.github.io/rovo-tools/estimator/" target="_blank" rel="noopener">Rovo Credit Estimator</a></strong> — plug in their real seats, editions, active users (3-month Chat+Agent MAU, not total AI MAU), activity mix, and automation runs for a proper per-driver breakdown and a green/amber/red verdict. The bands above are a "which bucket" gut-check, not a forecast.</p>
+
+  <h2 class="changed">V. How credit consumption shapes agent design</h2>
+  <p><strong>Default to a standard single agent on the flat 10-credit rate. Reach for a heavier reasoning mode (Think Deeper / Max) only when the task genuinely needs multi-step planning or cross-source judgement</strong> — a cheap wrong answer you re-run costs more than one good expensive one.</p>
+
+  <h3 class="changed">What the popular agents actually cost — three buckets</h3>
+  <p>Looking at Atlassian's out-of-the-box agents,<sup><a href="https://support.atlassian.com/rovo/docs/atlassian-agents/" title="Out-of-the-box agents">[4]</a></sup> credit consumption sorts into three design patterns. Which bucket an agent falls into matters far more than its per-run rate:</p>
+  <ul class="changed">
+    <li><strong>Flat-rate, human-triggered (most agents)</strong> — a person runs them interactively, single-step, flat 10 cr. The bulk of the catalog: <strong>Product Requirements Guide</strong>, <strong>Release Notes Drafter</strong>, <strong>Readiness Checker</strong>, <strong>Work Item Organizer</strong>, <strong>Bug Report Assistant</strong>, <strong>OKR Generator</strong>, <strong>Global Translator</strong>. Cost scales gently with adoption; easy to budget.</li>
+    <li><strong>Agents wired into automation (the volume multiplier — watch these)</strong> — an agent connected to an automation rule so it runs automatically when the rule fires, with <strong>no human present</strong>. Credits then scale with how often the <em>rule</em> fires, not with headcount. The official catalog builds two agents specifically for this: <strong>Blocker Checker</strong> and <strong>Service Triage</strong> (both "designed for automations"). A triage rule on "every new ticket" can fire thousands of times a month — usually the single biggest credit driver in an org, dwarfing interactive use.</li>
+    <li><strong>Cross-source judgement agents (use Think Deeper as a one-off)</strong> — agents whose job is to reason across multiple sources and make a judgement call: <strong>Rovo Ops</strong>, <strong>Jira Delivery Agent</strong>, <strong>Customer Insights</strong>, <strong>Transcript Insights Reporter</strong>. These are the genuine case for the heavier Think Deeper tier — but use it as a <strong>one-off</strong> for the specific hard task, not as the agent's default. A triage agent is the pattern in miniature: keep it on Quick Answers for rule-based routing (flat 10 cr), bump to Think Deeper only for the ambiguous tickets that need judgement, and reserve Max for open-ended cross-tool investigation once it ships.</li>
+  </ul>
+  <div class="callout c360"><span class="lab">Modelling note — automation ≠ Rovo credits</span>
+    Customer 360's automation-run count is the <em>total</em> automation across Jira/Confluence, <strong>not</strong> the subset wired to a Rovo agent. Only agent-connected runs spend credits. When you model automation in the <a href="https://wchen7-ai.github.io/rovo-tools/estimator/" target="_blank" rel="noopener">Rovo Credit Estimator</a>, enter only the <strong>Rovo-involved</strong> runs, not C360's total — otherwise you'll massively overstate burn.</div>
+  <p class="changed"><strong>Sub-agents don't double the cost — but separately-metered actions do add up.</strong> If you chat with a main agent (10 cr) and it hands off to a sub-agent for ordinary reasoning, you are <strong>not</strong> charged another 10 cr — the main agent and its sub-agents run as <strong>one invocation on one model</strong>, and their skills are billed collectively as a single ~10 cr interaction.<sup><a href="https://hello.atlassian.net/wiki/spaces/~7120204cd8d80c30a04786b126ea9de3ddc4e4/pages/7061944198" title="Reasoning &amp; model selection">[10]</a></sup></p>
+  <p class="changed"><strong>The exception:</strong> if a sub-agent triggers an action that is <em>separately metered</em>, that action bills at its own rate on top of the 10 cr — each billable AI action is metered per event at its own rate-card rate.<sup><a href="https://support.atlassian.com/rovo/docs/rovo-usage-limits/" title="Rovo usage allowance">[1]</a></sup></p>
+  <ul class="changed">
+    <li>Sub-agent → <strong>fires an automation-connected agent run</strong> = +~10 cr per run.</li>
+    <li>Sub-agent → <strong>Confluence Create with Rovo</strong> = +~70 cr for the create.</li>
+    <li>Sub-agent → <strong>Think Deeper</strong> = that step bills at the variable Think Deeper rate.</li>
+  </ul>
+  <p class="changed"><strong>Rule of thumb:</strong> one agent interaction is ~10 cr no matter how many sub-agents reason inside it, plus the rate of any distinct billable action (Create, Think Deeper, another agent run) invoked along the way.</p>
+  <div class="callout retired changed"><span class="lab">Changed · Deep Research is retired for agents</span>
+    New agents don't show a Deep Research toggle, and agents never auto-route to it (Think Deeper can activate automatically on complex prompts). For one-off heavy synthesis in <em>Chat</em> (not agents), Deep Research still exists — ~100 cr, up to 15 min, full citations.<sup><a href="https://hello.atlassian.net/wiki/spaces/~7120204cd8d80c30a04786b126ea9de3ddc4e4/pages/7061944198" title="Reasoning &amp; model selection">[10]</a></sup></div>
+  <p class="footnote changed"><em>Internal note — the default model behind each tier lives on an internal beta page; do not share model names with customers.</em></p>
+
+  <h2>VI. Customer FAQ — definitions &amp; gotchas</h2>
+  <p class="changed"><em>On Confluence, each Q&amp;A below renders as a collapsible <code>expand</code> macro (question = title, answer = collapsed body); the two subsections that follow are also collapsible.</em></p>
+  <ul class="changed">
+    <li><strong>What counts as an "interaction"?</strong> One billable request. A 5-message chat = ~50 cr, regardless of length. Search/summaries free.<sup><a href="https://support.atlassian.com/rovo/docs/rovo-usage-limits/" title="Rovo usage allowance">[1]</a></sup></li>
+    <li><strong>How do we define an active user?</strong> Actual Chat + Agent users (3-month avg from the C360 MAU panel), <em>not</em> Total AI MAU (search-dominated). See §IV.</li>
+    <li><strong>"I don't want surprise bills — what if we run out?"</strong> Extra usage is off by default — no automatic overage. In-flight work completes; only new requests pause, and free features keep working. Pool resets monthly. Admin alerts at 80% / 100%, hard cap available.<sup><a href="https://support.atlassian.com/subscriptions-and-billing/docs/managing-your-bill-for-rovo/" title="Manage your bill for Rovo">[3]</a></sup></li>
+    <li><strong>"Does it cost more depending on where I use it — Slack, Teams, Jira?"</strong> No "app tax." Cost is set by the feature (Basic 10 cr vs. Premium variable), not the surface. What changes your pool is which subscriptions <em>fund</em> it — not where you spend.<sup><a href="https://support.atlassian.com/subscriptions-and-billing/docs/managing-your-bill-for-rovo/" title="Manage your bill for Rovo">[3]</a></sup></li>
+    <li><strong>"Why should I pay for context / API calls?"</strong> 3P tools pulling Atlassian context via the Teamwork Graph API bill 1–10 cr/call. You're paying for permission-aware business context, not just model output.<sup><a href="https://hello.atlassian.net/wiki/spaces/455183727/pages/7318508587" title="Monetization Plans for Rovo MCP Tools">[14]</a></sup></li>
+    <li><strong>"Is everything moving to this model now?"</strong> No — some capabilities (e.g. Loom AI) stay on a separate system for now. Scope the specific products in play.</li>
+  </ul>
+
+  <h3>Which subscriptions fund credits?</h3>
+  <p><strong>Only four fund the pool — Teamwork Collection is a bundle, not a fifth app.</strong><sup><a href="https://support.atlassian.com/rovo/docs/rovo-usage-limits/" title="Rovo usage allowance">[1]</a></sup></p>
+  <ul>
+    <li><strong>Funds the pool:</strong> Jira, Confluence, JSM — 25/70/150; Teamwork Collection — 250/700/1,500 (≈10×).</li>
+    <li><strong>Spends, no own allowance:</strong> Loom AI, JPD, Trello, Strategy Collection.</li>
+    <li><strong>Free / graph-only:</strong> Analytics chart insights, Search, summaries, definitions; connectors feed the graph, cost only via TWG API.<sup><a href="https://hello.atlassian.net/wiki/spaces/455183727/pages/7318508587" title="Monetization Plans for Rovo MCP Tools">[14]</a></sup></li>
+  </ul>
+  <p><strong>Sizing warning:</strong> the Teamwork Collection already includes Confluence, Trello, Atlas, Loom — count the Collection <strong>or</strong> the apps, never both.</p>
+
+  <h3>Which products spend credits — grouped by maturity</h3>
+  <p class="changed"><strong>Confirmed (GA):</strong></p>
+  <ul class="changed">
+    <li><strong>Core apps</strong> (Jira/Confluence/JSM): Chat, Agents at standard rates; Search/summaries free.<sup><a href="https://support.atlassian.com/rovo/docs/rovo-usage-limits/" title="Rovo usage allowance">[1]</a></sup></li>
+    <li><strong>Loom:</strong> AI features spend ~70–300/run.</li>
+    <li><strong>Strategy Collection:</strong> own AI; spends from the pool at standard rates, no own allowance.<sup><a href="https://hello.atlassian.net/wiki/spaces/CW/pages/4799799333" title="Strategy Collection Hub">[17]</a><a href="https://hello.atlassian.net/wiki/spaces/~712020b2de4996df98489fadf6b749b0d13b9a/pages/7260656915" title="Talent Tokenomics">[18]</a></sup></li>
+  </ul>
+  <p class="changed"><strong>Verify — limited or unconfirmed:</strong></p>
+  <ul class="changed">
+    <li><strong>JPD:</strong> gaps (ideas flat text, Insights not indexed); chat/agents at standard rates.</li>
+    <li><strong>Trello:</strong> outside the standard model — verify with account team.</li>
+    <li><strong>Analytics:</strong> native chart insights <strong>free today (Verify)</strong>. But <strong>Rovo cross-product reporting</strong> (sprint data → Confluence) is a Rovo action, <strong>~10 cr</strong> — chart insights free; <em>generating the report is not</em>. ("Rovo for analytics" is ambiguous — clarify native Analytics AI vs. Rovo reporting; entitlement differs.)</li>
+  </ul>
+
+  <h2>VII. Admin controls &amp; governing usage</h2>
+  <p class="changed">No single "usage cap" toggle. Governance splits into two things: <strong>who controls what</strong> (admin architecture) and <strong>how you keep consumption in check</strong> (usage governance).<sup><a href="https://hello.atlassian.net/wiki/spaces/~tmihaylova/pages/7153605046" title="Admin Controls for Rovo">[11]</a></sup></p>
+
+  <h3 class="changed">A. The admin architecture — three layers, top-down</h3>
+  <p class="changed">Control flows from the org down to a single agent. Each layer has a different owner and a different job:</p>
+  <ol class="changed">
+    <li><strong>Org admin — turns Rovo on and sets the boundary.</strong> Enable/block Rovo per app, set rollout scope (pilot groups → org-wide), IP allowlists, connectors, usage visibility. <strong>MCP lives here too</strong> — enable/disable the MCP <em>server</em>, allowed domains, and read/write/search permission groups (org-wide today, not per-site).</li>
+    <li><strong>Studio admin — governs what gets built.</strong> The builder control plane: assign OOTB agents, create <strong>custom agents</strong>, build <strong>apps</strong> (App Builder), build <strong>automations</strong>, and attach agents to <strong>knowledge sources</strong> (connectors). Three independent creator roles gate this — <em>agent</em>, <em>app</em>, <em>automation</em> — grantable by user or group.</li>
+    <li><strong>Agent owner / manager — governs a single agent.</strong> Who can use and edit it, what <strong>skills/tools</strong> it can call, and its instructions. Owners can make an agent private or share it with named users.</li>
+  </ol>
+
+  <h3 class="changed">B. Governing usage — where to watch, alert &amp; cap</h3>
+  <ul class="changed">
+    <li><strong>Review usage</strong> — Admin → Rovo → Insights: total usage over time, by app, by user. Where a heavy-user hotspot or runaway automation shows up.<sup><a href="https://support.atlassian.com/organization-administration/docs/gain-insights-into-rovo-ai-activity/" title="Gain insights into Rovo AI activity">[5]</a></sup></li>
+    <li><strong>Set alerts &amp; caps</strong> — 80% / 100% notifications; extra-usage caps are opt-in and <strong>off by default</strong>, so no accidental overage.<sup><a href="https://support.atlassian.com/subscriptions-and-billing/docs/managing-your-bill-for-rovo/" title="Manage your bill for Rovo">[3]</a></sup></li>
+    <li><strong>Restrict who can build</strong> — the single biggest burn lever. Limiting agent (especially automation) creation prevents "builder sprawl," the usual cause of runaway growth.</li>
+  </ul>
+  <p class="changed"><strong>Recommended stack (best practice):</strong><sup><a href="https://hello.atlassian.net/wiki/spaces/~71202020f2b5b038c949e9901003414bf00eb2/pages/7142974484" title="Managing a Rovo Rollout">[20]</a></sup></p>
+  <ul class="changed">
+    <li><strong>Access shape</strong> — broad Rovo <em>usage</em>, narrow <em>Studio access</em>, restricted <em>creators</em>.</li>
+    <li><strong>Phase the rollout</strong> — pilot group first, keep early agents private, then expand in waves.</li>
+    <li><strong>Showback before chargeback</strong> — make usage visible to stakeholders first, then decide whether formal cost allocation is needed.</li>
+  </ul>
+  <p class="changed"><strong>Governance gaps to flag</strong> — four controls admins expect but don't fully have yet:<sup><a href="https://hello.atlassian.net/wiki/spaces/~tmihaylova/pages/7153605046" title="Admin Controls for Rovo">[11]</a></sup></p>
+  <ul class="changed">
+    <li><strong>No per-agent group sharing.</strong> You can restrict who sees an agent, but only by naming <em>individual users</em> — there's no "share with this team/group." Managing a sensitive agent across a large team means adding people one by one. (Group support is in progress.)</li>
+    <li><strong>No hide-until-approved workflow.</strong> An agent a non-admin builds can't be held hidden pending formal admin sign-off. The workaround is a sandbox: build and test there, then move approved agents to production. Admin "verification" is a trust badge, not a gate.</li>
+    <li><strong>MCP controls are org-wide, not site-scoped.</strong> Enabling/disabling the MCP server, allowed domains, and permission groups apply to the whole org — you can't tune MCP for one site or business unit independently.</li>
+    <li><strong>Usage forecasting is still "coming soon."</strong> Admins get 80% / 100% threshold alerts, but the forward-looking spend forecast in Insights isn't live yet — no projected end-of-cycle burn inside the product.</li>
+  </ul>
+  <p class="changed"><strong>Two ways an agent can now be invoked programmatically — both admin-gated.</strong></p>
+  <div class="callout changed"><span class="lab">Changed · Rovo Public Agents API</span>
+    A documented REST API (<code>/gateway/api/rovo/v1</code>) to open a conversation with an agent by ID and send messages, via OAuth 2.0. <strong>EAP + allowlisted</strong> — not yet GA self-serve; confirm the org is enabled before promising it.<sup><a href="https://hello.atlassian.net/wiki/spaces/mcp/pages/7241401527" title="Rovo agent invocation APIs (Agent as a Tool)">[19]</a></sup></div>
+  <div class="callout changed"><span class="lab">Changed · Agent2Agent (A2A)</span>
+    A live, customer-documented protocol letting compatible 3P agents (e.g. Claude, Gemini) and custom agents connect to Rovo and act across Jira/Confluence <strong>using the user's existing permissions</strong>. OAuth 2.1; <strong>the org admin must enable A2A in Admin Hub first</strong> — a governance lever, not a bypass.<sup><a href="https://support.atlassian.com/atlassian-ai-gateway/docs/use-agent2agent-connections/" title="Use Agent2Agent connections">[6]</a><a href="https://support.atlassian.com/security-and-access-policies/docs/manage-a2a-connections-in-admin-hub/" title="Manage A2A connections in Admin Hub">[7]</a></sup></div>
+  <p class="changed">Credit treatment is settled either way: an agent call triggered through either path spends credits like any other invocation.<sup><a href="https://support.atlassian.com/rovo/docs/rovo-usage-limits/" title="Rovo usage allowance">[1]</a></sup></p>
+
+  <h2>VIII. Honest caveats</h2>
+  <ul>
+    <li>No universal rule of thumb for exact per-prompt cost — variable-mode depends on prompt, model, use case.</li>
+    <li>Rate-card values beyond the official Support page are directional; may change before enforcement (~Dec 2026).</li>
+    <li>Usage profiles are directional "which bucket" anchors, not a per-customer forecast — model the specific customer in the Estimator.</li>
+    <li class="changed"><strong>"Free" = 0 credits today.</strong> May change once enforcement begins (~Dec 2026) — re-check the current rate before quoting.</li>
+  </ul>
+
+  <h2>IX. References &amp; resources</h2>
+  <p class="footnote">Official Support pages govern commitments; internal pages are directional. Rate figures verified <strong>5 Aug 2026</strong>.</p>
+  <h3>Official</h3>
+  <table>
+    <tr><th>#</th><th>Resource</th><th>Verified</th></tr>
+    <tr><td>1</td><td><a href="https://support.atlassian.com/rovo/docs/rovo-usage-limits/">Rovo usage allowance</a></td><td>5 Aug 2026</td></tr>
+    <tr><td>2</td><td><a href="https://www.atlassian.com/licensing/rovo">Rovo Plans &amp; FAQs</a></td><td>5 Aug 2026</td></tr>
+    <tr><td>3</td><td><a href="https://support.atlassian.com/subscriptions-and-billing/docs/managing-your-bill-for-rovo/">Manage your bill for Rovo</a></td><td>5 Aug 2026</td></tr>
+    <tr><td>4</td><td><a href="https://support.atlassian.com/rovo/docs/compare-rovo-chat-reasoning-modes/">Compare Rovo Chat reasoning modes</a></td><td>5 Aug 2026</td></tr>
+    <tr><td>5</td><td><a href="https://support.atlassian.com/organization-administration/docs/gain-insights-into-rovo-ai-activity/">Gain insights into Rovo AI activity</a></td><td>5 Aug 2026</td></tr>
+    <tr class="changed"><td>6</td><td><a href="https://support.atlassian.com/atlassian-ai-gateway/docs/use-agent2agent-connections/">Use Agent2Agent connections</a> (A2A protocol, permission inheritance)</td><td>6 Aug 2026</td></tr>
+    <tr class="changed"><td>7</td><td><a href="https://support.atlassian.com/security-and-access-policies/docs/manage-a2a-connections-in-admin-hub/">Manage A2A connections in Admin Hub</a> (admin gate)</td><td>6 Aug 2026</td></tr>
+  </table>
+  <h3>Internal (directional) <span class="tag new">expanded</span></h3>
+  <table>
+    <tr><th>#</th><th>Resource</th><th>Last checked</th></tr>
+    <tr><td>8</td><td><a href="https://hello.atlassian.net/wiki/spaces/tcsm/pages/7323412132">Rovo Credits, LLM tokens &amp; words</a></td><td>17 Jul 2026</td></tr>
+    <tr><td>9</td><td><a href="https://hello.atlassian.net/wiki/spaces/~712020c9c9d639ac1e4582a8cb52c87fc3b62c/pages/6536233883">Rovo Current Limitations &amp; Guidance</a></td><td>26 Apr 2026</td></tr>
+    <tr><td>10</td><td><a href="https://hello.atlassian.net/wiki/spaces/~7120204cd8d80c30a04786b126ea9de3ddc4e4/pages/7061944198">Reasoning &amp; model selection</a> (Deep Research retirement, Max)</td><td>29 May 2026</td></tr>
+    <tr><td>11</td><td><a href="https://hello.atlassian.net/wiki/spaces/~tmihaylova/pages/7153605046">Admin Controls for Rovo</a></td><td>11 Jun 2026</td></tr>
+    <tr><td>12</td><td><a href="https://hello.atlassian.net/wiki/spaces/ftw/pages/7189706990">Board Paper: Atlassian AI Strategy</a></td><td>16 Jun 2026</td></tr>
+    <tr class="changed"><td>13</td><td><a href="https://hello.atlassian.net/wiki/spaces/~639a1f1cf3c3dfd71fe87a21/pages/7035879613">Rovo Credit Consumption Mental Model</a> (upstream six-tier taxonomy)</td><td>Verified 5 Aug 2026</td></tr>
+    <tr class="changed"><td>14</td><td><a href="https://hello.atlassian.net/wiki/spaces/455183727/pages/7318508587">Monetization Plans for Rovo MCP Tools</a></td><td>Jul 2026</td></tr>
+    <tr class="changed"><td>15</td><td><a href="https://hello.atlassian.net/wiki/spaces/acbp/pages/7102029744">Rovo credits UBP FAQs</a></td><td>Verified 5 Aug 2026</td></tr>
+    <tr class="changed"><td>16</td><td><a href="https://hello.atlassian.net/wiki/spaces/Rovo/pages/6782683836">How Rovo credits work — customer-facing draft</a></td><td>Verified 5 Aug 2026</td></tr>
+    <tr class="changed"><td>17</td><td><a href="https://hello.atlassian.net/wiki/spaces/CW/pages/4799799333">Strategy Collection Hub</a></td><td>Verified 5 Aug 2026</td></tr>
+    <tr class="changed"><td>18</td><td><a href="https://hello.atlassian.net/wiki/spaces/~712020b2de4996df98489fadf6b749b0d13b9a/pages/7260656915">Talent Tokenomics / Agent Cost Governance</a></td><td>Verified 5 Aug 2026</td></tr>
+    <tr class="changed"><td>19</td><td><a href="https://hello.atlassian.net/wiki/spaces/mcp/pages/7241401527">Rovo agent invocation APIs (Agent as a Tool)</a> — Public Agents API, EAP/allowlisted</td><td>6 Aug 2026</td></tr>
+    <tr class="changed"><td>20</td><td><a href="https://hello.atlassian.net/wiki/spaces/~71202020f2b5b038c949e9901003414bf00eb2/pages/7142974484">Managing a Rovo Rollout</a> — recommended stack, phased rollout, showback-before-chargeback</td><td>6 Aug 2026</td></tr>
+  </table>
+  <h3>Related team resources <span class="tag new">new</span></h3>
+  <ul class="changed">
+    <li>Using Rovo Credit Consumption Insights in Customer Conversations — Jennifer Yuan</li>
+    <li>Rovo Credits — 15 Example Use Cases with Concrete Credit Costs — Oliver Bredow</li>
+    <li>Rovo Credits rate card summary — Caroline Bartle</li>
+    <li>Rovo/AI credit modeling &amp; deal sizing guide — REAL Hub</li>
+    <li>Rovo Rate Card Update - July 8 — REAL News (Tammy Lam)</li>
+  </ul>
+  <p class="footnote"><strong>Watch items:</strong> credit enforcement (~Dec 2026); Max tier (coming soon, TBD); model names (beta); the Rovo Public Agents API graduating EAP → GA; which free features (Analytics, Search) later attach a cost.</p>
+</div>
+</body>
+</html>

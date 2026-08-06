@@ -1,0 +1,213 @@
+/*
+ * rovo-rates.embedded.js — GENERATED BUILD ARTIFACT. DO NOT HAND-EDIT.
+ * Auto-generated from data/rovo-rates.json by build-embedded.js.
+ * Regenerate after any change:  node build-embedded.js
+ * Used only as the file:// (double-click) fallback when fetch() is blocked.
+ */
+window.ROVO_RATES_EMBEDDED = {
+  "_meta": {
+    "description": "Single source of truth for all Rovo Credits customer-conversation tooling. Every number that appears in more than one place (tools + Confluence) lives here and ONLY here. Edit this file, redeploy, and all tools update. Confluence prose references this file's lastVerified date.",
+    "schemaVersion": "1.0",
+    "lastVerified": "2026-08-05",
+    "lastVerifiedBy": "Wallace Chen",
+    "enforcementDate": "2026-12-03",
+    "sourceOfTruth": {
+      "official": "https://support.atlassian.com/rovo/docs/rovo-usage-limits/",
+      "officialCalculator": "https://docs.google.com/spreadsheets/d/1wj0YXk09ITQ43pFxsCN5rAwSK7u8OJRCLnD0gdv33zg/copy",
+      "internalMentalModel": "https://hello.atlassian.net/wiki/spaces/~7120205be9d9bc70584d9a83edfcd77a21c0b9/pages/7035879613",
+      "rulesOfThumb": "https://hello.atlassian.net/wiki/spaces/~7120205be9d9bc70584d9a83edfcd77a21c0b9/pages/7432861405"
+    },
+    "sources": {
+      "_note": "Named references for caveats. Caveats cite a source key + this file's lastVerified date, so 'last checked' updates on re-verify instead of a hard-coded date in prose.",
+      "capabilities": { "title": "Rovo Capabilities & rate card — by Collection", "url": "../capabilities/", "note": "Sibling tool in this repo. Full fund-vs-spend flow and per-product directional rates." },
+      "mcpMonetization": { "title": "Monetization Plans for Rovo MCP Tools and Credit Consumption Rules", "url": "https://hello.atlassian.net/wiki/spaces/455183727/pages/7318508587" },
+      "howCreditsWork":  { "title": "How Rovo credits work — customer-facing draft", "url": "https://hello.atlassian.net/wiki/spaces/Rovo/pages/6782683836" },
+      "ubpFaqs":         { "title": "Rovo credits UBP FAQs", "url": "https://hello.atlassian.net/wiki/spaces/acbp/pages/7102029744" },
+      "agentApiStatus":  { "title": "Rovo agent invocation APIs (Agent as a Tool) — Public Agents API, EAP/allowlisted", "url": "https://hello.atlassian.net/wiki/spaces/mcp/pages/7241401527", "status": "eap", "note": "SUPERSEDES the earlier unverified Loom note. Public Agents API (/gateway/api/rovo/v1, OAuth 2.0) exists but is EAP + allowlisted, not GA self-serve." },
+      "a2aConnections":  { "title": "Use Agent2Agent connections (support.atlassian.com)", "url": "https://support.atlassian.com/atlassian-ai-gateway/docs/use-agent2agent-connections/", "status": "ga", "note": "Live, customer-documented A2A protocol. OAuth 2.1; org admin must enable in Admin Hub first; uses existing user permissions." },
+      "a2aAdminHub":     { "title": "Manage A2A connections in Admin Hub (support.atlassian.com)", "url": "https://support.atlassian.com/security-and-access-policies/docs/manage-a2a-connections-in-admin-hub/", "status": "ga", "note": "Admin gate for enabling A2A." },
+      "rolloutGovernance":{ "title": "Managing a Rovo Rollout: Governance, Access Control & Usage Tracking", "url": "https://hello.atlassian.net/wiki/spaces/~71202020f2b5b038c949e9901003414bf00eb2/pages/7142974484", "note": "Recommended stack, phased rollout, showback-before-chargeback, reporting cadence." },
+      "strategyHub":     { "title": "Strategy Collection Hub — Focus, Talent, Jira Align (sold as a bundle)", "url": "https://hello.atlassian.net/wiki/spaces/CW/pages/4799799333" },
+      "talentTokenomics":{ "title": "Talent Tokenomics / Agent Cost Governance", "url": "https://hello.atlassian.net/wiki/spaces/~712020b2de4996df98489fadf6b749b0d13b9a/pages/7260656915" },
+      "mentalModel":     { "title": "Rovo Credit Consumption Mental Model (six-tier rate tiers)", "url": "https://hello.atlassian.net/wiki/spaces/~639a1f1cf3c3dfd71fe87a21/pages/7035879613" }
+    },
+    "disclaimer": "Directional planning estimates, logically consistent with Atlassian's public rate card and official Rovo Calculator. NOT a billing quote. Always confirm sizing and pricing with AE/CSM (and go/rovocalc) before sharing numbers with a customer."
+  },
+
+  "allowances": {
+    "_note": "Credits per user per month, by app and edition. Pooled org-wide, monthly reset, no rollover. Teamwork Collection is a bundle (~10x a single app), not a fifth app — count the Collection OR the individual apps, never both.",
+    "apps": ["Jira", "Confluence", "Service Mgmt / JSM", "Teamwork Collection"],
+    "editions": ["Standard", "Premium", "Enterprise"],
+    "byEdition": {
+      "Standard":   { "Jira": 25,  "Confluence": 25,  "Service Mgmt / JSM": 25,  "Teamwork Collection": 250 },
+      "Premium":    { "Jira": 70,  "Confluence": 70,  "Service Mgmt / JSM": 70,  "Teamwork Collection": 700 },
+      "Enterprise": { "Jira": 150, "Confluence": 150, "Service Mgmt / JSM": 150, "Teamwork Collection": 1500 }
+    },
+    "twcMultiplier": 10,
+    "fundsThePool": ["Jira", "Confluence", "Service Mgmt / JSM", "Teamwork Collection"]
+  },
+
+  "rateCard": {
+    "_note": "Credit cost per interaction. Customer-facing rates from Atlassian Support are safe to quote; heavier/variable modes are directional. 'free' = 0 credits today, may change once enforcement begins.",
+    "interactions": [
+      { "id": "chat",    "name": "Chat — Quick Answer",     "rate": 10,  "variable": false, "free": false, "customerSafe": true,  "estimatorSlider": true,  "note": "One fast question by a person. One question = one billable interaction. Per active user / month." },
+      { "id": "agent",   "name": "Agent request",           "rate": 10,  "variable": false, "free": false, "customerSafe": true,  "estimatorSlider": true,  "note": "A PERSON interactively running a Rovo agent (human present). Per active user / month. Agent runs with NO human present (fired by a rule) belong in Automation, not here." },
+      { "id": "create",  "name": "Create with Rovo",        "rate": 70,  "variable": false, "free": false, "customerSafe": true,  "estimatorSlider": true,  "note": "Confluence: generates a whole page/document from a prompt. ~7x a chat. Rovo credits (not a separate currency)." },
+      { "id": "think",   "name": "Think Deeper",            "rate": 75,  "variable": true,  "free": false, "customerSafe": false, "estimatorSlider": true,  "rangeLow": 50, "rangeHigh": 100, "note": "Variable ~50-100+. Mid-point used for estimation. Mid reasoning tier. Spends Rovo credits (NOT a separate 'Max' currency). The ladder is Quick Answers -> Think Deeper -> Max (Marathon)." },
+      { "id": "deep",    "name": "Deep Research report",    "rate": 100, "variable": false, "free": false, "customerSafe": true,  "estimatorSlider": false, "retired": true, "note": "RETIRED from agent reasoning tiers (usage extremely low) — new agents no longer show the toggle; use Think Deeper. Survives only as a one-off Chat mode (~100 cr/report). Kept for the Capabilities rate-card reference; NOT an estimator slider." },
+      { "id": "max",     "name": "Max (Marathon)",          "rate": 0,   "variable": true,  "free": false, "customerSafe": false, "estimatorSlider": true,  "disabled": true, "comingSoon": true, "rateTbd": true, "note": "Highest agent reasoning tier (Marathon orchestrator, up to 500 loops, Opus 4.6). Rovo credits, variable/highest. COMING SOON — not GA, rate not finalised (rate 0 is a placeholder). Shown as a disabled/TBD slider." },
+      { "id": "search",  "name": "Search / find",           "rate": 0,   "variable": false, "free": true,  "customerSafe": true,  "estimatorSlider": true,  "note": "FREE today, including search across third-party connected apps (Slack, Google Drive, GitLab, Box, etc.). ANSWERED: Rovo Search is free across UI, public APIs, and MCP; connecting/indexing 3P data is free. Assumes interactive Atlassian/connected-app search — web search would cost more. Future wrinkle: programmatic TWG search via MCP/API is registered as billable (1-10 cr) but pending review, not enforced.", "sourceRefs": ["mcpMonetization", "howCreditsWork", "ubpFaqs"] },
+      { "id": "summary", "name": "Summaries & definitions", "rate": 0,   "variable": false, "free": true,  "customerSafe": true,  "estimatorSlider": true,  "note": "FREE today. Includes chart insights." }
+    ],
+    "workflowCosts": {
+      "_note": "BATCH/whole-job estimates for common workflows — NOT single-action rates. Directional. The single-action rate is always ~10 cr (chat/agent) or the interaction's own rate; these figures multiply that across a batch. Source for triageAgentRun & bulkCreate: 'Rovo credits as a monetization lever' (pages/7232311921). Used in Rules of Thumb §IV and the Capabilities rate card.",
+      "triageAgentRun": 200,
+      "_triageAgentRun_note": "ONE automation run over ~20 tickets = 20 × 10 cr. Per ticket it's the flat 10 cr (see Rules of Thumb §V). NOT the cost of triaging a single ticket.",
+      "bulkCreate": 150,
+      "_bulkCreate_note": "THREE bulk-import operations, each a ~5-message create: 10 × 3 × 5. NOT one Jira task (a single create is ~5-10 cr; a Confluence page ~70).",
+      "confluenceCreate": 70,
+      "weeklyInsights": 50,
+      "deepResearch": 100,
+      "loomAiRun": { "low": 70, "high": 300 }
+    },
+    "automation": {
+      "_note": "Credits are charged per Rovo agent/LLM invocation, regardless of what triggered it or which identity owns it. A human click, a service-account automation rule, and an external API call all spend the same ~10 cr from the org pool. The credit follows the agent call, not the caller. Edition-independent: Standard/Premium/Enterprise all pay ~10 cr per Rovo agent call.",
+      "creditsPerRun": 10,
+      "creditFollowsTheCall": true,
+      "editionIndependent": true,
+      "triggers": {
+        "human": "Person clicks/runs an agent — spends credits, counts as an active user (model in the Agent-request slider, not here).",
+        "serviceAccount": "Automation rule under a service account fires an agent — spends credits, but a service account is NOT an active user. Count in Automation, not active users.",
+        "api": "An external API call that invokes a Rovo agent spends credits the same way (credit follows the call). Two documented paths now exist: the Rovo Public Agents API (EAP + allowlisted — source agentApiStatus) and Agent2Agent/A2A (live, admin-gated — sources a2aConnections, a2aAdminHub). Credit treatment is settled; the Public Agents API is not yet GA self-serve."
+      }
+    },
+    "teamworkGraphApi": {
+      "_note": "TWG/MCP API calls — enriched-api tier. Reads cost, writes free.",
+      "readLow": 1, "readHigh": 10, "writeCost": 0
+    },
+    "rovoDev": {
+      "_note": "SEPARATE credit pool from the main Rovo allowance.",
+      "creditsPerRequest": 5,
+      "standardMonthlyPerDev": 2000,
+      "overageDollarsPerCredit": 0.01
+    },
+    "overage": {
+      "dollarsPerCredit": 0.01,
+      "optInRequired": true,
+      "noticeDays": 90,
+      "alertThresholds": [80, 100]
+    }
+  },
+
+  "benchmarkBands": {
+    "_note": "Per-user monthly Rovo Chat/Agent request bands from Atlassian's official calculator. Convert at flat 10 cr/request. These are directional 'which bucket' anchors, NOT a per-customer forecast.",
+    "low":      { "label": "Light",    "requestsPerUserMonth": 1,  "creditsPerUserMonth": "10-20",  "desc": "Occasional dabbler. ~1-2 quick answers/agent runs a month." },
+    "medium":   { "label": "Moderate", "requestsPerUserMonth": 2,  "creditsPerUserMonth": 100,      "desc": "Regularly engaged user. ~10 quick answers/agent runs a month." },
+    "high":     { "label": "Heavy",    "requestsPerUserMonth": 10, "creditsPerUserMonth": 175,      "desc": "Atlassian internal blended average across 15.5K users; aspirational 12-18mo target." },
+    "atlassianInternal": { "requestsPerUserMonth": "18-45" },
+    "activeFractionDefault": 0.4,
+    "aiAhaAdoptionAnchor": { "chatMessages": 10, "credits": 100, "productValueCredits": 1700 }
+  },
+
+  "terminology": {
+    "_note": "Canonical terms aligned across Confluence, all three tools, and C360. Use the 'canonical' term everywhere; 'aliases' lists names seen elsewhere that mean the same thing.",
+    "activeUsers": {
+      "canonical": "Active users (credit consumers)",
+      "definition": "The subset of seats who actually USE Rovo and generate billable actions. Defined by ACTUAL chat + agent call counts (from Rovo Capability Usage), NOT a percentage-of-seats estimate.",
+      "howToRead": "In Customer 360, open the customer's Cloud Usage → the 'Rovo capabilities: Monthly active users' panel and read the Chat users (plus Agent users) line. Average the last 3 months for a steadier basis rather than relying on a single month, which can be noisy. Use that as your monthly active-user count. Don't use the headline 'Total AI MAU' or Search users — those count free search and aren't credit-consuming users.",
+      "aliases": ["credit consumers", "Rovo MAU (excl. search)"],
+      "notEqualTo": "Rovo MAU incl. search (which counts free search users too)"
+    },
+    "seats": {
+      "canonical": "Seats (licensed users)",
+      "definition": "People with a paid license for the app/edition. Sets the ALLOWANCE, not usage.",
+      "aliases": ["licensed users"]
+    },
+    "credits": {
+      "canonical": "Credits",
+      "definition": "The billing/metering unit customers consume. NOT tokens. Monthly prepaid wallet, not a taxi meter.",
+      "notEqualTo": "Tokens (internal model volume; ~100 tokens ≈ 75 words)"
+    },
+    "interaction": {
+      "canonical": "Interaction (billable request)",
+      "definition": "One billable request. A 5-message chat = ~50 credits regardless of length. Search/summaries are free."
+    },
+    "automationRun": {
+      "canonical": "Automation run",
+      "definition": "A Rovo agent invocation fired by an automation rule. Credits follow the agent call, not the caller — ~10 cr whether triggered by a human, a service account, or an API call. A service-account run spends credits but is NOT an active user, so count it as automation, not a user."
+    }
+  },
+
+  "labels": {
+    "_note": "Shared UI strings rendered by all tools so terminology lives in ONE place, not hardcoded in HTML. Tools read these; Confluence prose should match them.",
+    "activeUsers": "Active users / month",
+    "activeUsersSub": "credit consumers — actual chat + agent users, not % of seats",
+    "seats": "Seats",
+    "seatsSub": "licensed users — sets the allowance",
+    "chat": "Chat — Quick Answer",
+    "agent": "Agent request",
+    "create": "Create with Rovo",
+    "think": "Think Deeper",
+    "deep": "Deep Research report",
+    "max": "Max (Marathon)",
+    "search": "Search / find",
+    "summary": "Summaries & definitions",
+    "automation": "Automation",
+    "automationSub": "org-wide — agent runs with no human present",
+    "pooledAllowance": "Pooled allowance",
+    "runRate": "Latest-month run-rate",
+    "modelled": "Modelled (active users × activity)",
+    "creditsPerMonth": "credits / mo",
+    "spendOnlyNote": "This estimate covers the four products that fund the pool (Jira, Confluence, JSM, Teamwork Collection). Other products — Loom AI, the Strategy Collection (Focus/Talent/Align), JPD, Trello — spend from the same pool but add no allowance of their own. If the customer uses those, their real burn is higher than shown here; the heavier ones (e.g. Loom AI) cost well above a standard request. See the Capabilities page for the full fund-vs-spend breakdown, and model those separately with the account team.",
+    "spendOnlyProducts": [
+      { "name": "Strategy", "sub": "Focus · Talent · Align", "maturity": "ga" },
+      { "name": "Loom AI", "sub": "~70–300 / run", "maturity": "ga" },
+      { "name": "JPD", "sub": "ideas flat text, Insights not indexed", "maturity": "verify" },
+      { "name": "Trello", "sub": "outside standard model — verify", "maturity": "verify" },
+      { "name": "Assets", "sub": "feeds JSM AI; no direct feature yet", "maturity": "verify" }
+    ],
+    "freeActions": [
+      { "name": "Search", "sub": "across Atlassian + connected apps" },
+      { "name": "Summaries & definitions", "sub": "incl. chart insights" },
+      { "name": "Analytics", "sub": "chart insights free today · Verify — confirm entitlement", "maturity": "verify" }
+    ]
+  },
+
+  "c360Mapping": {
+    "_note": "PHASE 1: maps Customer 360 / Cloud Usage export columns to estimator fields. Observed exports confirm the Rovo capabilities panels come as (a) an INTERACTIONS table (Chat messages / Agent interactions / Search queries) with one column per month, and (b) an MAU panel (Search/Chat/Agent users). Panels download separately. When C360 renames a column, edit HERE, not the parser. API access is Phase 2.",
+    "_assumptions": {
+      "searchScope": "Assumes interactive Atlassian/connected-app search (free). Web search would cost more. Verified free across UI/API/MCP.",
+      "automationRovoShare": "C360 counts total automation runs but CANNOT separate which invoke a Rovo agent. Credit rule is settled (confirmed w/ Adam, per source agentApiStatus): any agent-involving run spends ~10 cr. To find the Rovo share, work in REVERSE via Rovo Studio -> agent -> Surfaces -> Automations.",
+      "activeUserBasis": "Use CHAT-USER MAU (excl. search) as the active-user basis, NOT Total AI MAU. Observed pattern: AI MAU is search-dominated and commonly ~10x the real chat-user population; using it would overstate credit usage badly.",
+      "trendHandling": "Panels export ~12 months. Headline credit number uses the LATEST COMPLETE MONTH (run-rate), not a 12-month average (which is dragged down by pre-launch months). Show the 12-month history as a sparkline; make no forward projection in-tool — the CSM reads the trend."
+    },
+    "panels": {
+      "interactions": {
+        "_note": "Rovo capabilities: Usage panel. Rows are capabilities; columns are months (e.g. 'Aug '26'). Parser takes the latest complete month for the headline, keeps the series for the sparkline.",
+        "rows": {
+          "Chat messages":     { "estimatorField": "usage.chatInteractions",   "billable": true,  "rateId": "chat"  },
+          "Agent interactions":{ "estimatorField": "usage.agentInteractions",  "billable": true,  "rateId": "agent" },
+          "Search queries":    { "estimatorField": "usage.searchQueries",       "billable": false, "rateId": "search" }
+        }
+      },
+      "mau": {
+        "_note": "Rovo capabilities: Monthly active users panel. Chat users = active-user basis.",
+        "rows": {
+          "Chat users":   { "estimatorField": "activeUsers",        "note": "Preferred active-user basis (excl. search)." },
+          "Agent users":  { "estimatorField": "usage.agentUsers",   "note": "Usually near-zero; signals automation-led if interactions high but users ~0." },
+          "Search users": { "estimatorField": "usage.searchUsers",  "note": "Free; sanity/context only, NOT active users." }
+        }
+      }
+    },
+    "footprint": {
+      "_note": "Customer 360 Footprint / Cloud Usage. Seats and tier.",
+      "columns": [
+        { "c360Column": "Jira",                "estimatorField": "seats.Jira",               "transform": "int" },
+        { "c360Column": "Confluence",          "estimatorField": "seats.Confluence",         "transform": "int" },
+        { "c360Column": "Service Collection",  "estimatorField": "seats.Service Mgmt / JSM", "transform": "int" },
+        { "c360Column": "Segment",             "estimatorField": "edition",                  "transform": "editionFromSegment", "note": "Enterprise segment -> Enterprise edition (verify against actual plan)." },
+        { "c360Column": "Total AI MAU",        "estimatorField": "context.totalAiMau",       "transform": "int", "note": "Context only — do NOT use as active users (search-dominated)." }
+      ]
+    }
+  }
+};
